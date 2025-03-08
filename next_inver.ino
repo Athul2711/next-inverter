@@ -108,7 +108,7 @@ bool r8 = 0;
 const char* ssidd     = "hlo12";
 const char* passs = "1231231234";
 
-#define BLYNK_FIRMWARE_VERSION        "0.3.3"
+#define BLYNK_FIRMWARE_VERSION        "0.3.5"
 
 #define BLYNK_PRINT Serial
 //#define BLYNK_DEBUG
@@ -313,6 +313,7 @@ void autolight() {
     auxdaypeeks = 0;
     invofff = 0;
     allon = 0;
+    digitalWrite(charge_1_mos, HIGH);
 
     if (invondaya) {
       invonday++;
@@ -371,11 +372,11 @@ void protection() {
 
 
 
-  if (digitalRead(ac_inn)) {
+  if (!(digitalRead(ac_inn))) {//changed
     digitalWrite(inverter_mos, HIGH);
     invertermos_state = 0;
   }
-  if (batteryvoltage < 12) {
+  if (batteryvoltage < 11.6) {
     lowpoweroff = 1;
 
     digitalWrite(inverter_mos, HIGH);
@@ -397,7 +398,7 @@ void protection() {
 
   }
   if (hour() < 7 || hour() > 16 || forceonn == 1) {
-    if (batteryvoltage < 12.0) {
+    if (batteryvoltage < 11.6) {
 
 
       digitalWrite(inverter_mos, HIGH);
@@ -407,7 +408,7 @@ void protection() {
     }
   } else {
 
-    if (batteryvoltage < 12.55 || daypeeks == 0) {
+    if (batteryvoltage < 12.2 || daypeeks == 0) {
 
 
       digitalWrite(inverter_mos, HIGH);
@@ -448,7 +449,7 @@ void loop() {
 ICACHE_RAM_ATTR void detectsMovement() {
 
 
-  if (!digitalRead(ac_inn)) {
+  if (digitalRead(ac_inn)) {//changed
     Serial.println("inst");
     digitalWrite(inverter_ac, HIGH);
 
@@ -517,7 +518,7 @@ if(batteryvoltage < 12.2){
       usedminute = (digitalRead(ussed_min));
   if (usedminute == 0 && repusedmin == 0) {
 
-    if (!digitalRead(ac_inn)) {
+    if (digitalRead(ac_inn)) {//changed
       invertersetup();
       fiveminute = millis() - 400000;
 
@@ -543,7 +544,7 @@ if(batteryvoltage < 12.2){
   }}
 
 
-  if (digitalRead(ac_inn)) { //low yes
+  if (!digitalRead(ac_inn)) { //low yes  changed
     chargeroutine();
 
 
@@ -644,7 +645,7 @@ void subthread1() {
 
   }
 
-  if (batteryvoltage < 11.94) {//
+  if (batteryvoltage < 11.54) {//
     lowpoweroff = 1;
 
   }
@@ -689,13 +690,6 @@ void inverterroutine() {
 
 
 
-    if (firsttimeinv == 1 && batteryvoltage < 12.2 && invertermos_state == 1) {
-      firsttimeinv = 0;
-      digitalWrite(inverter_mos, HIGH);
-      delay(4500);
-      digitalWrite(inverter_mos, LOW);
-
-    }
     //6,7,8,9
 
     int justhour = hour();
@@ -725,7 +719,7 @@ void inverterroutine() {
 
 
 
-    if (batteryvoltage < 12.0) {
+    if (batteryvoltage < 11.6) {
 
 
       digitalWrite(inverter_mos, HIGH);
@@ -836,7 +830,7 @@ void chargesetup() {
 
 void pwcn() {
 
-  if (digitalRead(ac_inn)) {
+  if (!digitalRead(ac_inn)) { //changed
     digitalWrite(inverter_ac, LOW);
     Serial.println("inst1");
 
@@ -896,7 +890,7 @@ BLYNK_WRITE(V15) // Executes when the value of virtual pin 0 changes
   if (param.asInt() == 1)
   {
 
-    if (!digitalRead(ac_inn)) {
+    if (digitalRead(ac_inn)) {//changed
       invertersetup();
 
       terminal.println(param.asInt());
